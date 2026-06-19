@@ -1,0 +1,65 @@
+{
+  "name": "Lead Capture & Routing (Mais Energia)",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "1",
+      "name": "Webhook (From Backend/Supabase)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.body.lead_score}}",
+              "value2": "MAX"
+            }
+          ]
+        }
+      },
+      "id": "2",
+      "name": "Is Priority MAX?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "phoneNumber": "={{$json.body.phone}}",
+        "text": "=Olá {{$json.body.name}}, vi que simulou uma poupança de {{$json.body.estimated_savings}}€ na Mais Energia! Como posso ajudar?"
+      },
+      "id": "3",
+      "name": "Send WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [700, 200]
+    }
+  ],
+  "connections": {
+    "Webhook (From Backend/Supabase)": {
+      "main": [
+        [
+          {
+            "node": "Is Priority MAX?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Priority MAX?": {
+      "main": [
+        [
+          {
+            "node": "Send WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

@@ -1,0 +1,178 @@
+const express = require('express');
+const multer = require('multer');
+const nodemailer = require('nodemailer');
+const fs = require('fs');
+
+const router = express.Router();
+
+// Configuração do Multer para guardar temporariamente os uploads
+const upload = multer({ dest: 'uploads/' });
+
+// Configuração do Nodemailer (SMTP)
+// NOTA: Colocar as credenciais reais no .env
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST || 'smtp.mailtrap.io',
+  port: process.env.SMTP_PORT || 2525,
+  auth: {
+    user: process.env.SMTP_USER || 'user',
+    pass: process.env.SMTP_PASS || 'pass',
+  },
+});
+
+function calculateLeadScore(costTier, energyType) {
+  if (costTier === 'mais200' || energyType === 'ambos') return 'MAX';
+  if (costTier === '100-200') return 'HOT';
+  return 'NORMAL';
+}
+
+// Helper: Enviar Fatura por Email silenciosamente para a equipa
+async function sendInvoiceByEmail(leadData, file) {
+  try {
+    const mailOptions = {
+      from: '"Mais Energia Bot" <bot@maisenergia.pt>',
+      to: process.env.SALES_TEAM_EMAIL || 'vendas@maisenergia.pt',
+      subject: `[LEAD FATURA] Nova fatura recebida (Upload Premium)`,
+      text: `Recebemos uma nova fatura Premium!\n\nTelefone Associado: ${leadData.phone}\nScore Estimado: ${leadData.lead_score}\n\nFatura em anexo.`,
+      attachments: []
+    };
+
+    if (file) {
+      mailOptions.attachments.push({
+        filename: file.originalname,
+        path: file.path
+      });
+    }
+
+    await transporter.sendMail(mailOptions);
+    console.log(`[EMAIL] Fatura (Premium) associada ao telefone ${leadData.phone} enviada com sucesso.`);
+    
+    // Clean up temporary file
+    if (file && fs.existsSync(file.path)) {
+      fs.unlinkSync(file.path);
+    }
+  } catch (error) {
+    console.error('[EMAIL ERROR] Falha ao enviar email com fatura:', error);
+  }
+}
+
+// Integração com Evolution API
+const EVOLUTION_URL = process.env.EVOLUTION_URL || 'https://evolution.topconsultores.pt';
+const EVOLUTION_INSTANCE = process.env.EVOLUTION_INSTANCE || 'Whats';
+const EVOLUTION_API_KEY = process.env.EVOLUTION_API_KEY || '';
+const TARGET_WHATSAPP = process.env.TARGET_WHATSAPP || '244928053925';
+
+// Helper: Disparo direto de WhatsApp (Evolution API)
+async function sendLeadToWhatsApp(leadData, file = null) {
+  try {
+    console.log(`[WHATSAPP] A enviar mensagem para ${TARGET_WHATSAPP} sobre a lead ${leadData.name || leadData.phone}...`);
+    
+    // Construção da mensagem
+    let message = `*NOVA LEAD CAPTURADA (Auditoria Gratuita)*\n\n`;
+    if (leadData.name) message += `👤 Nome: ${leadData.name}\n`;
+    message += `📞 Telefone do Cliente: ${leadData.phone}\n`;
+    if (leadData.email) message += `📧 Email: ${leadData.email}\n`;
+    if (leadData.energy_type) message += `⚡ Tipo: ${leadData.energy_type}\n`;
+    if (leadData.cost_tier) message += `💰 Escalão: ${leadData.cost_tier}\n`;
+    message += `🔥 Score: ${leadData.lead_score}`;
+
+    if (file) {
+      // Envio de Media com legenda
+      const base64Data = fs.readFileSync(file.path, { encoding: 'base64' });
+
+      const payload = {
+        number: TARGET_WHATSAPP,
+        mediatype: "document",
+        fileName: file.originalname || "fatura.pdf",
+        caption: message,
+        media: base64Data
+      };
+
+      const response = await fetch(`${EVOLUTION_URL}/message/sendMedia/${EVOLUTION_INSTANCE}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': EVOLUTION_API_KEY
+        },
+        body: JSON.stringify(payload)
+      });
+      const data = await response.json();
+      console.log(`[WHATSAPP] Fatura enviada via Evolution API:`, data);
+    } else {
+      // Envio Apenas de Texto
+      const response = await fetch(`${EVOLUTION_URL}/message/sendText/${EVOLUTION_INSTANCE}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': EVOLUTION_API_KEY
+        },
+        body: JSON.stringify({
+          number: TARGET_WHATSAPP,
+          text: message
+        })
+      });
+      const data = await response.json();
+      console.log(`[WHATSAPP] Mensagem de texto enviada via Evolution API:`, data);
+    }
+  } catch (error) {
+    console.error('[WHATSAPP ERROR] Falha ao enviar notificação WhatsApp:', error);
+  }
+}
+
+// Passo 2: Receção da Lead
+router.post('/leads', async (req, res) => {
+  try {
+    const { name, email, phone, energy_type, cost_tier } = req.body;
+    
+    const leadScore = calculateLeadScore(cost_tier, energy_type);
+
+    const newLead = {
+      name, email, phone, energy_type, cost_tier,
+      has_invoice: false,
+      lead_score: leadScore,
+      created_at: new Date().toISOString()
+    };
+
+    // 1. Guardar no Supabase (MOCK)
+    console.log('[SUPABASE] Lead guardada na BD.');
+
+    // 2. Disparar WhatsApp diretamente
+    await sendLeadToWhatsApp(newLead);
+
+    return res.status(200).json({ success: true, lead: newLead });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, error: 'Erro ao processar lead.' });
+  }
+});
+
+// Passo 3: Upload Fatura (Oferta Premium)
+router.post('/leads/invoice', upload.single('invoice'), async (req, res) => {
+  try {
+    const { phone } = req.body;
+    const file = req.file;
+
+    const premiumUpdate = {
+      phone,
+      has_invoice: true,
+      invoice_filename: file ? file.originalname : null,
+      lead_score: 'PREMIUM_ANALYSIS', 
+      updated_at: new Date().toISOString()
+    };
+
+    // 1. Atualizar Lead no Supabase (MOCK) buscando pelo phone
+    console.log(`[SUPABASE] Fatura Premium anexada à lead com telefone ${phone}.`);
+
+    // 2. Enviar Fatura por E-mail para a Equipa
+    await sendInvoiceByEmail(premiumUpdate, file);
+
+    // 3. Avisar WhatsApp sobre o upload e enviar o ficheiro PDF via WhatsApp
+    await sendLeadToWhatsApp({ ...premiumUpdate, name: "Upload Premium Recebido" }, file);
+
+    return res.status(200).json({ success: true, premiumUpdate });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, error: 'Erro ao processar fatura premium.' });
+  }
+});
+
+module.exports = router;

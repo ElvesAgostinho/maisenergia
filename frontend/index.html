@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mais Energia - Comparador de Tarifários & IA</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <!-- Main Header -->
+    <header class="main-header">
+      <div class="header-container">
+        <a href="/" class="logo" style="gap: 0.75rem;">
+          <img src="/logo.png" alt="Mais Energia Logo" style="height: 40px; width: 40px; border-radius: 8px; object-fit: cover;" />
+          Mais Energia
+        </a>
+        
+        <nav class="main-nav">
+          <a href="#como-funciona">Como Funciona</a>
+          <a href="https://wa.me/351929029975?text=Ol%C3%A1!%20Gostaria%20de%20falar%20com%20um%20consultor%20da%20Mais%20Energia." target="_blank">Contactar Consultor</a>
+        </nav>
+        
+        <div class="header-actions">
+          <a href="https://wa.me/351929029975?text=Ol%C3%A1!%20Gostaria%20de%20falar%20com%20um%20consultor%20da%20Mais%20Energia." target="_blank" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">Falar Connosco</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- New Conversion Hero Section -->
+    <style>
+      .hero-image-side {
+        display: none;
+      }
+      @media (min-width: 992px) {
+        .hero-image-side {
+          display: block;
+          flex: 1;
+        }
+      }
+    </style>
+    <section class="hero-conversion" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); min-height: 100vh; display: flex; align-items: stretch; position: relative;">
+      
+      <!-- Left Side: Professional Image -->
+      <div class="hero-image-side" style="background-image: url('/hero_image.png'); background-size: cover; background-position: center; position: relative; display: flex; flex-direction: column; justify-content: center; padding: 4rem;">
+        <!-- Overlay gradient to make text readable -->
+        <div style="position: absolute; inset: 0; background: linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.3) 100%); z-index: 1;"></div>
+        
+        <!-- Value Proposition Text over Image -->
+        <div class="hero-text" style="position: relative; z-index: 2; color: white;">
+          <h1 style="font-size: 3.5rem; margin-bottom: 1rem; font-weight: 800; letter-spacing: -1px; line-height: 1.15; color: white; text-shadow: 0 2px 10px rgba(0,0,0,0.3);">
+            <span style="background: linear-gradient(135deg, #E51B24, #FF9800); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">Auditoria Gratuita</span><br>à Sua Fatura
+          </h1>
+          <p style="font-size: 1.25rem; font-weight: 400; color: rgba(255,255,255,0.9); margin-bottom: 2rem; line-height: 1.6; max-width: 450px;">
+            A maioria das pessoas paga a fatura de energia sem saber se existe uma opção mais barata. Descubra em 30 segundos se está a pagar mais do que devia.
+          </p>
+          
+          <div style="display: flex; gap: 1.5rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; color: white; font-size: 0.95rem; font-weight: 600;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+              Análise Grátis
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; color: white; font-size: 0.95rem; font-weight: 600;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+              Sem Fidelização
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Side: Form -->
+      <div style="flex: 1; display: flex; flex-direction: column; padding: 6rem 2rem 2rem 2rem; overflow-y: auto;">
+        <div style="max-width: 480px; width: 100%; margin: auto;">
+          
+          <!-- Conversion Form Box -->
+          <div class="hero-form-box" style="background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); overflow: hidden; border: 1px solid rgba(0,0,0,0.05); position: relative;">
+            <div style="padding: 2rem;">
+              
+              <!-- STEP 1: Questions -->
+              <div id="sim-step-1">
+                <h3 style="font-size: 1.3rem; color: #1a1a1a; margin-bottom: 1.5rem; font-weight: 700;">Descubra se paga demasiado</h3>
+                
+                <label style="display: block; font-size: 0.9rem; font-weight: 600; color: #4a5568; margin-bottom: 0.5rem;">O que quer analisar?</label>
+                <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem;">
+                  <button type="button" class="btn-toggle active" data-type="luz" style="flex: 1; padding: 0.7rem; border-radius: 8px; border: 2px solid #0288D1; background: rgba(2,136,209,0.05); color: #0288D1; font-weight: 600; cursor: pointer; transition: all 0.2s;">Luz</button>
+                  <button type="button" class="btn-toggle" data-type="gas" style="flex: 1; padding: 0.7rem; border-radius: 8px; border: 2px solid #e2e8f0; background: white; color: #718096; font-weight: 600; cursor: pointer; transition: all 0.2s;">Gás</button>
+                  <button type="button" class="btn-toggle" data-type="ambos" style="flex: 1; padding: 0.7rem; border-radius: 8px; border: 2px solid #e2e8f0; background: white; color: #718096; font-weight: 600; cursor: pointer; transition: all 0.2s;">Ambos</button>
+                </div>
+
+                <label style="display: block; font-size: 0.9rem; font-weight: 600; color: #4a5568; margin-bottom: 0.5rem;">Indique quanto paga por mês:</label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 2rem;" id="tier-container">
+                  <button type="button" class="btn-tier" data-tier="menos50" style="padding: 0.7rem; border-radius: 8px; border: 2px solid #e2e8f0; background: white; color: #718096; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: all 0.2s;">Menos de 50€</button>
+                  <button type="button" class="btn-tier" data-tier="50-100" style="padding: 0.7rem; border-radius: 8px; border: 2px solid #e2e8f0; background: white; color: #718096; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: all 0.2s;">50€ a 100€</button>
+                  <button type="button" class="btn-tier" data-tier="100-200" style="padding: 0.7rem; border-radius: 8px; border: 2px solid #e2e8f0; background: white; color: #718096; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: all 0.2s;">100€ a 200€</button>
+                  <button type="button" class="btn-tier" data-tier="mais200" style="padding: 0.7rem; border-radius: 8px; border: 2px solid #e2e8f0; background: white; color: #718096; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: all 0.2s;">Mais de 200€</button>
+                </div>
+
+                <button id="btn-calc-savings" class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.1rem; font-weight: 700; border-radius: 8px; box-shadow: 0 5px 15px rgba(229, 27, 36, 0.2);">
+                  Ver Resultado
+                </button>
+              </div>
+
+              <!-- STEP 2: Lead Capture -->
+              <div id="sim-step-2" style="display: none; text-align: center;">
+                <div style="background: rgba(229, 27, 36, 0.05); padding: 1.2rem; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid rgba(229, 27, 36, 0.1);">
+                  <p style="font-size: 0.95rem; color: #4a5568; font-weight: 500; margin: 0;">Encontrámos tarifas potencialmente mais vantajosas para um perfil semelhante ao seu.</p>
+                </div>
+                
+                <p style="font-size: 1rem; color: #1a1a1a; margin-bottom: 1.5rem; font-weight: 700;">Receba uma análise gratuita e personalizada da sua fatura.</p>
+
+                <div style="text-align: left; margin-bottom: 1rem;">
+                  <input type="text" id="lead-name" placeholder="O seu Nome" style="width: 100%; padding: 0.9rem; border-radius: 8px; border: 2px solid #e2e8f0; font-size: 1rem; outline: none; transition: border-color 0.3s;" onfocus="this.style.borderColor='#0288D1'" onblur="this.style.borderColor='#e2e8f0'">
+                </div>
+                <div style="text-align: left; margin-bottom: 1rem;">
+                  <input type="email" id="lead-email" placeholder="O seu E-mail" style="width: 100%; padding: 0.9rem; border-radius: 8px; border: 2px solid #e2e8f0; font-size: 1rem; outline: none; transition: border-color 0.3s;" onfocus="this.style.borderColor='#0288D1'" onblur="this.style.borderColor='#e2e8f0'">
+                </div>
+                <div style="text-align: left; margin-bottom: 1.5rem;">
+                  <input type="tel" id="lead-phone" placeholder="O seu Telefone (WhatsApp)" style="width: 100%; padding: 0.9rem; border-radius: 8px; border: 2px solid #e2e8f0; font-size: 1rem; outline: none; transition: border-color 0.3s;" onfocus="this.style.borderColor='#0288D1'" onblur="this.style.borderColor='#e2e8f0'">
+                </div>
+
+                <button id="btn-submit-lead" class="btn btn-primary" style="width: 100%; padding: 1.2rem; font-size: 1.1rem; font-weight: 700; border-radius: 8px; display: flex; justify-content: center; align-items: center; gap: 0.5rem; background: #25D366; box-shadow: 0 10px 20px rgba(37, 211, 102, 0.2);">
+                  🟢 Receber Análise Gratuita
+                </button>
+              </div>
+
+              <!-- STEP 3: Premium Upsell -->
+              <div id="sim-step-3" style="display: none; text-align: center;">
+                <h3 style="font-size: 1.3rem; color: #1a1a1a; margin-bottom: 0.5rem; font-weight: 800;">Tudo Certo! 🎉</h3>
+                <p style="font-size: 0.95rem; color: #4a5568; margin-bottom: 1.5rem;">Os seus dados foram recebidos com sucesso.</p>
+
+                <div style="background: #f8fafc; padding: 1.5rem; border-radius: 12px; border: 2px dashed #0288D1; margin-bottom: 1.5rem;">
+                  <p style="font-size: 1rem; color: #0288D1; font-weight: 700; margin-bottom: 1rem;">OFERTA PREMIUM (100% Grátis)</p>
+                  <p style="font-size: 0.9rem; color: #4a5568; margin-bottom: 1rem; line-height: 1.4;">Envie já a sua fatura (foto ou PDF) para uma análise exata e receba:</p>
+                  <ul style="text-align: left; font-size: 0.85rem; color: #718096; margin-bottom: 1.5rem; padding-left: 1.5rem; line-height: 1.6;">
+                    <li>Comparação das melhores tarifas</li>
+                    <li>Estimativa real de poupança</li>
+                    <li>Proposta personalizada</li>
+                    <li>Apoio na mudança de fornecedor</li>
+                  </ul>
+                  
+                  <div id="premium-upload-zone" style="background: white; border: 1px solid #cbd5e1; border-radius: 8px; padding: 1.5rem; cursor: pointer; transition: all 0.3s;">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#0288D1" stroke-width="2" style="margin-bottom: 0.5rem;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+                    <p style="font-size: 0.95rem; color: #0288D1; font-weight: 700; margin: 0;">Anexar Fatura</p>
+                    <p style="font-size: 0.8rem; color: #718096; margin: 0;">PDF, JPG ou PNG</p>
+                    <input type="file" id="premium-file-input" style="display: none;" accept="application/pdf,image/*">
+                  </div>
+                </div>
+                
+                <p id="premium-upload-success" style="display:none; color: #22c55e; font-weight: 600; margin-top: 1rem;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 0.2rem;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                  Fatura recebida!
+                </p>
+
+                <button id="btn-skip-upload" style="background: none; border: none; color: #718096; font-size: 0.9rem; text-decoration: underline; cursor: pointer; padding: 0.5rem;">
+                  Não tenho a fatura comigo agora
+                </button>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Como Funciona Section -->
+    <section id="como-funciona" style="padding: 5rem 0; background-color: var(--color-bg-white);">
+      <div class="container text-center">
+        <h2 style="font-size: 2.5rem; color: var(--color-primary); margin-bottom: 3rem; font-weight: 700;">Como Funciona</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 3rem;">
+          <div class="work-card">
+            <div class="step-number">1</div>
+            <h4 style="font-size: 1.4rem; color: var(--color-primary); margin-bottom: 1rem; font-weight: 700;">Responda a 2 Perguntas</h4>
+            <p style="color: var(--color-text-light); line-height: 1.7; font-size: 1.05rem;">Indique-nos apenas o tipo de energia e qual o escalão da sua fatura atual. Demora menos de 15 segundos.</p>
+          </div>
+          <div class="work-card">
+            <div class="step-number">2</div>
+            <h4 style="font-size: 1.4rem; color: var(--color-primary); margin-bottom: 1rem; font-weight: 700;">Análise do Perfil</h4>
+            <p style="color: var(--color-text-light); line-height: 1.7; font-size: 1.05rem;">Cruzamos automaticamente o seu perfil com as tarifas mais competitivas do mercado nacional para ver onde pode poupar.</p>
+          </div>
+          <div class="work-card">
+            <div class="step-number">3</div>
+            <h4 style="font-size: 1.4rem; color: var(--color-primary); margin-bottom: 1rem; font-weight: 700;">Auditoria Completa</h4>
+            <p style="color: var(--color-text-light); line-height: 1.7; font-size: 1.05rem;">No final, anexe a sua fatura para uma estimativa exata. Um consultor entrará em contacto consigo via WhatsApp com a proposta.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Results Section (Hidden by default) -->
+    <section id="resultados" class="results-section" style="display: none;">
+      <div class="container">
+        <h2 class="text-center" style="margin-bottom: 3rem; font-size: 2.5rem; font-weight: 700;">O seu Relatório de Poupança</h2>
+        
+        <div id="results-container">
+          <!-- Dynamically injected via JS -->
+        </div>
+        
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contactos" class="results-section" style="background-color: var(--color-bg-white); color: var(--color-primary); border-top: 1px solid var(--color-border); padding: 4rem 0;">
+      <div class="container text-center">
+        <h2 style="font-size: 2.5rem; margin-bottom: 1rem;">Tem dúvidas sobre a sua simulação?</h2>
+        <p style="font-size: 1.125rem; color: var(--color-text-light); margin-bottom: 2rem;">Os nossos consultores especializados analisam o seu caso e tratam de tudo por si, sem custos.</p>
+        <a href="https://wa.me/351929029975?text=Ol%C3%A1!%20Gostaria%20de%20falar%20com%20um%20consultor%20da%20Mais%20Energia." target="_blank" class="btn btn-primary" style="font-size: 1.1rem; padding: 1.2rem 2.5rem;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 0.5rem;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+          Falar com um Consultor
+        </a>
+      </div>
+    </section>
+
+    <footer class="main-footer" style="padding: 3rem 0; background-color: var(--color-primary); color: white; margin-top: 5rem;">
+      <div class="container text-center">
+        <p style="margin-bottom: 1.5rem; font-size: 0.95rem; opacity: 0.9;">&copy; 2026 Mais Energia. Todos os direitos reservados.</p>
+        <div style="display: flex; justify-content: center; gap: 2rem; font-size: 0.85rem; opacity: 0.75; flex-wrap: wrap;">
+          <a href="privacidade.html" style="text-decoration: underline;">Política de Privacidade</a>
+          <a href="termos.html" style="text-decoration: underline;">Termos e Condições</a>
+          <a href="cookies.html" style="text-decoration: underline;">Política de Cookies</a>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Lead Capture Modal Overlay -->
+    <div id="leadModal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+      <!-- Modal Content -->
+      <div style="background: white; padding: 3rem 2.5rem; text-align: center; max-width: 450px; width: 90%; border-radius: 24px; box-shadow: 0 30px 60px rgba(0,0,0,0.4); position: relative;">
+        
+        <h3 style="color: var(--color-primary); font-size: 2rem; margin-bottom: 1rem; font-weight: 800;">Excelente Decisão!</h3>
+        <p style="color: var(--color-text-light); font-size: 1.1rem; margin-bottom: 2rem; line-height: 1.5;">
+          A nossa equipa trata de toda a papelada e muda o seu tarifário para a <strong id="leadSupplierName" style="color: var(--color-secondary);"></strong> de forma 100% gratuita.
+        </p>
+        
+        <input type="hidden" id="leadSupplierInput" value="" />
+        <input type="hidden" id="leadSavingsInput" value="" />
+        
+        <div style="text-align: left; margin-bottom: 1rem;">
+          <label style="display: block; font-size: 0.85rem; color: var(--color-primary); font-weight: 600; margin-bottom: 0.4rem;">Nome Completo</label>
+          <input type="text" id="leadName" placeholder="O seu Nome" style="width: 100%; padding: 1rem; border-radius: 12px; border: 2px solid rgba(0,0,0,0.1); background: #f8f9fa; color: var(--color-primary); font-size: 1rem; outline: none; transition: border-color 0.3s;" onfocus="this.style.borderColor='var(--color-secondary)'" onblur="this.style.borderColor='rgba(0,0,0,0.1)'" />
+        </div>
+
+        <div style="text-align: left; margin-bottom: 2rem;">
+          <label style="display: block; font-size: 0.85rem; color: var(--color-primary); font-weight: 600; margin-bottom: 0.4rem;">Contacto</label>
+          <input type="text" id="leadContact" placeholder="E-mail ou Telefone" style="width: 100%; padding: 1rem; border-radius: 12px; border: 2px solid rgba(0,0,0,0.1); background: #f8f9fa; color: var(--color-primary); font-size: 1rem; outline: none; transition: border-color 0.3s;" onfocus="this.style.borderColor='var(--color-secondary)'" onblur="this.style.borderColor='rgba(0,0,0,0.1)'" />
+        </div>
+        
+        <div style="display: flex; gap: 1rem; width: 100%;">
+          <button id="btnCancelLead" class="btn" style="flex: 1; background: transparent; border: 2px solid rgba(0,0,0,0.1); color: var(--color-text-light); font-weight: 600;">Cancelar</button>
+          <button id="btnSubmitLead" class="btn btn-primary" style="flex: 1.5; font-weight: 700; box-shadow: 0 4px 15px rgba(229, 27, 36, 0.2);">Avançar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RGPD Cookie Banner -->
+    <div id="cookieBanner" class="cookie-banner">
+      <div class="cookie-content">
+        <h4><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"></path></svg>Privacidade e Cookies</h4>
+        <p>Utilizamos cookies essenciais para garantir o funcionamento seguro deste site e análises anónimas. Ao abrigo do RGPD, garantimos a total proteção dos seus dados.</p>
+      </div>
+      <div class="cookie-actions">
+        <button id="btnCookieEssential" class="btn" style="background: transparent; border: 1px solid var(--color-primary); color: var(--color-primary); font-size: 0.85rem; padding: 0.6rem 1rem;">Apenas Essenciais</button>
+        <button id="btnCookieAccept" class="btn btn-primary" style="font-size: 0.85rem; padding: 0.6rem 1rem;">Aceitar Todos</button>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
