@@ -222,33 +222,23 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --- Google Analytics (RGPD Compliant) ---
-  const injectAnalytics = () => {
-    if (document.getElementById('ga-script')) return; // Evita duplicar
-    
-    const script1 = document.createElement('script');
-    script1.async = true;
-    script1.src = 'https://www.googletagmanager.com/gtag/js?id=G-VHGZ2MWML8';
-    script1.id = 'ga-script';
-    document.head.appendChild(script1);
-
-    const script2 = document.createElement('script');
-    script2.innerHTML = `
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-VHGZ2MWML8');
-    `;
-    document.head.appendChild(script2);
+  // --- Google Analytics Consent Update ---
+  const grantAnalyticsConsent = () => {
+    if(typeof window !== 'undefined' && window.gtag) {
+      window.gtag('consent', 'update', {
+        'ad_storage': 'granted',
+        'analytics_storage': 'granted'
+      });
+    }
   };
 
   // --- Cookie Banner Logic ---
   const cookieBanner = document.getElementById('cookieBanner');
   const currentConsent = localStorage.getItem('cookieConsent');
 
-  // Se já tinha aceite antes, injeta logo as tags silenciosamente
+  // Se já tinha aceite antes, informa a Google
   if (currentConsent === 'all') {
-    injectAnalytics();
+    grantAnalyticsConsent();
   }
 
   if (cookieBanner && !currentConsent) {
@@ -259,9 +249,9 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('cookieConsent', consentType);
     if(cookieBanner) cookieBanner.classList.remove('show');
     
-    // Se a pessoa clicar em 'Aceitar Todos', injetamos as tags no mesmo segundo
+    // Se a pessoa clicar em 'Aceitar Todos', enviamos o OK para a Google
     if (consentType === 'all') {
-      injectAnalytics();
+      grantAnalyticsConsent();
     }
   };
 
