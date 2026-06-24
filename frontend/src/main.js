@@ -222,15 +222,49 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // --- Google Analytics (RGPD Compliant) ---
+  const injectAnalytics = () => {
+    if (document.getElementById('ga-script')) return; // Evita duplicar
+    
+    const script1 = document.createElement('script');
+    script1.async = true;
+    script1.src = 'https://www.googletagmanager.com/gtag/js?id=G-VHGZ2MWML8';
+    script1.id = 'ga-script';
+    document.head.appendChild(script1);
+
+    const script2 = document.createElement('script');
+    script2.innerHTML = `
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-VHGZ2MWML8');
+    `;
+    document.head.appendChild(script2);
+  };
+
   // --- Cookie Banner Logic ---
   const cookieBanner = document.getElementById('cookieBanner');
-  if (cookieBanner && !localStorage.getItem('cookieConsent')) {
+  const currentConsent = localStorage.getItem('cookieConsent');
+
+  // Se já tinha aceite antes, injeta logo as tags silenciosamente
+  if (currentConsent === 'all') {
+    injectAnalytics();
+  }
+
+  if (cookieBanner && !currentConsent) {
     setTimeout(() => { cookieBanner.classList.add('show'); }, 1500);
   }
+
   const hideCookieBanner = (consentType) => {
     localStorage.setItem('cookieConsent', consentType);
     if(cookieBanner) cookieBanner.classList.remove('show');
+    
+    // Se a pessoa clicar em 'Aceitar Todos', injetamos as tags no mesmo segundo
+    if (consentType === 'all') {
+      injectAnalytics();
+    }
   };
+
   document.getElementById('btnCookieEssential')?.addEventListener('click', () => hideCookieBanner('essential'));
   document.getElementById('btnCookieAccept')?.addEventListener('click', () => hideCookieBanner('all'));
 
