@@ -22,6 +22,13 @@ body {
   color: var(--color-text-dark);
   background-color: var(--color-bg-gray);
   line-height: 1.6;
+  padding-bottom: 70px; /* For bottom nav on mobile */
+}
+
+@media (min-width: 768px) {
+  body {
+    padding-bottom: 0;
+  }
 }
 
 a {
@@ -114,8 +121,14 @@ a {
 }
 
 .header-actions {
-  display: flex;
+  display: none; /* Hide on mobile by default */
   gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .header-actions {
+    display: flex;
+  }
 }
 
 .icon-btn {
@@ -336,13 +349,19 @@ a {
   align-items: center;
   justify-content: center;
   padding: 1rem 2rem;
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 600;
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.2s ease;
   border: none;
   gap: 0.5rem;
+  min-height: 48px; /* Mobile-first touch target size */
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn:active {
+  transform: scale(0.97); /* App-like active state */
 }
 
 .btn-primary {
@@ -363,6 +382,14 @@ a {
 
 .btn-block {
   width: 100%;
+}
+
+.btn-toggle, .btn-tier {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-toggle:active, .btn-tier:active {
+  transform: scale(0.95);
 }
 
 
@@ -502,3 +529,56 @@ a {
     bottom: 0;
   }
 }
+
+/* -----------------------------
+   MOBILE BOTTOM NAVIGATION
+----------------------------- */
+.mobile-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: white;
+  display: flex;
+  justify-content: space-around;
+  padding: 0.6rem 0;
+  padding-bottom: calc(0.6rem + env(safe-area-inset-bottom));
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+  z-index: 1000;
+  border-top: 1px solid var(--color-border);
+}
+
+.mobile-bottom-nav .nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  color: var(--color-text-light);
+  font-size: 0.75rem;
+  font-weight: 600;
+  flex: 1;
+  padding: 0.5rem 0;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-bottom-nav .nav-item svg {
+  width: 24px;
+  height: 24px;
+  transition: transform 0.2s;
+}
+
+.mobile-bottom-nav .nav-item.active {
+  color: var(--color-secondary);
+}
+
+.mobile-bottom-nav .nav-item:active svg {
+  transform: scale(0.85);
+}
+
+@media (min-width: 768px) {
+  .mobile-bottom-nav {
+    display: none;
+  }
+}
+

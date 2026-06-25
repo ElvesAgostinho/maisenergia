@@ -91,8 +91,20 @@ document.addEventListener('DOMContentLoaded', () => {
       btnCalcSavings.disabled = true;
 
       setTimeout(() => {
-        step1.style.display = 'none';
-        step2.style.display = 'block';
+        step1.style.transition = 'all 0.3s ease';
+        step1.style.opacity = '0';
+        step1.style.transform = 'translateY(-10px)';
+        setTimeout(() => {
+          step1.style.display = 'none';
+          step2.style.display = 'block';
+          step2.style.opacity = '0';
+          step2.style.transform = 'translateY(10px)';
+          step2.style.transition = 'all 0.4s ease';
+          // Force reflow
+          void step2.offsetWidth;
+          step2.style.opacity = '1';
+          step2.style.transform = 'translateY(0)';
+        }, 300);
       }, 800);
     });
   }
@@ -127,8 +139,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         if (response.ok) {
-          step2.style.display = 'none';
-          step3.style.display = 'block';
+          step2.style.transition = 'all 0.3s ease';
+          step2.style.opacity = '0';
+          step2.style.transform = 'translateY(-10px)';
+          setTimeout(() => {
+            step2.style.display = 'none';
+            step3.style.display = 'block';
+            step3.style.opacity = '0';
+            step3.style.transform = 'translateY(10px)';
+            step3.style.transition = 'all 0.4s ease';
+            void step3.offsetWidth;
+            step3.style.opacity = '1';
+            step3.style.transform = 'translateY(0)';
+          }, 300);
         } else {
           throw new Error('Erro ao enviar pedido.');
         }
