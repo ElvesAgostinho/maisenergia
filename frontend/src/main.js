@@ -197,23 +197,26 @@ document.addEventListener('DOMContentLoaded', () => {
     premiumUploadZone.addEventListener('drop', e => {
       const dt = e.dataTransfer;
       const files = dt.files;
-      if (files.length > 0) handlePremiumUpload(files[0]);
+      if (files.length > 0) handlePremiumUpload(files);
     });
 
     premiumFileInput.addEventListener('change', e => {
-      if (e.target.files.length > 0) handlePremiumUpload(e.target.files[0]);
+      if (e.target.files.length > 0) handlePremiumUpload(e.target.files);
     });
   }
 
-  async function handlePremiumUpload(file) {
+  async function handlePremiumUpload(files) {
     premiumUploadZone.style.opacity = '0.5';
     premiumUploadZone.style.pointerEvents = 'none';
     
-    // Upload file to backend attached to the lead phone
+    // Upload files to backend attached to the lead phone
     const formData = new FormData();
     formData.append('phone', currentLeadPhone);
     formData.append('has_invoice', 'true');
-    formData.append('invoice', file);
+    
+    for (let i = 0; i < files.length; i++) {
+      formData.append('invoice', files[i]);
+    }
 
     try {
       const response = await fetch(`${API_BASE_URL}/leads/invoice`, {
@@ -224,6 +227,12 @@ document.addEventListener('DOMContentLoaded', () => {
       if (response.ok) {
         premiumUploadZone.style.display = 'none';
         btnSkipUpload.style.display = 'none';
+        
+        // Update success message based on file count
+        if (files.length > 1) {
+          premiumUploadSuccess.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 0.2rem;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> ${files.length} Faturas recebidas!`;
+        }
+        
         premiumUploadSuccess.style.display = 'block';
       } else {
         throw new Error('Falha ao anexar fatura');

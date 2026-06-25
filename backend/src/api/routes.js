@@ -26,29 +26,35 @@ function calculateLeadScore(costTier, energyType) {
 }
 
 // Helper: Enviar Fatura por Email silenciosamente para a equipa
-async function sendInvoiceByEmail(leadData, file) {
+async function sendInvoiceByEmail(leadData, files) {
   try {
     const mailOptions = {
       from: '"Mais Energia Bot" <bot@maisenergia.pt>',
       to: process.env.SALES_TEAM_EMAIL || 'vendas@maisenergia.pt',
       subject: `[LEAD FATURA] Nova fatura recebida (Upload Premium)`,
-      text: `Recebemos uma nova fatura Premium!\n\nTelefone Associado: ${leadData.phone}\nScore Estimado: ${leadData.lead_score}\n\nFatura em anexo.`,
+      text: `Recebemos uma nova fatura Premium!\n\nTelefone Associado: ${leadData.phone}\nScore Estimado: ${leadData.lead_score}\n\nFaturas em anexo.`,
       attachments: []
     };
 
-    if (file) {
-      mailOptions.attachments.push({
-        filename: file.originalname,
-        path: file.path
-      });
+    if (files && files.length > 0) {
+      for (const file of files) {
+        mailOptions.attachments.push({
+          filename: file.originalname,
+          path: file.path
+        });
+      }
     }
 
     await transporter.sendMail(mailOptions);
-    console.log(`[EMAIL] Fatura (Premium) associada ao telefone ${leadData.phone} enviada com sucesso.`);
+    console.log(`[EMAIL] Faturas (Premium) associadas ao telefone ${leadData.phone} enviadas com sucesso.`);
     
-    // Clean up temporary file
-    if (file && fs.existsSync(file.path)) {
-      fs.unlinkSync(file.path);
+    // Clean up temporary files
+    if (files && files.length > 0) {
+      for (const file of files) {
+        if (fs.existsSync(file.path)) {
+          fs.unlinkSync(file.path);
+        }
+      }
     }
   } catch (error) {
     console.error('[EMAIL ERROR] Falha ao enviar email com fatura:', error);
@@ -62,7 +68,7 @@ const EVOLUTION_API_KEY = process.env.EVOLUTION_API_KEY || '';
 const TARGET_WHATSAPP = process.env.TARGET_WHATSAPP || '244928053925';
 
 // Helper: Disparo direto de WhatsApp (Evolution API)
-async function sendLeadToWhatsApp(leadData, file = null) {
+async function sendLeadToWhatsApp(leadData, files = null) {
   try {
     console.log(`[WHATSAPP] A enviar mensagem para ${TARGET_WHATSAPP} sobre a lead ${leadData.name || leadData.phone}...`);
     
@@ -75,28 +81,30 @@ async function sendLeadToWhatsApp(leadData, file = null) {
     if (leadData.cost_tier) message += `💰 Escalão: ${leadData.cost_tier}\n`;
     message += `🔥 Score: ${leadData.lead_score}`;
 
-    if (file) {
-      // Envio de Media com legenda
-      const base64Data = fs.readFileSync(file.path, { encoding: 'base64' });
+    if (files && files.length > 0) {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const base64Data = fs.readFileSync(file.path, { encoding: 'base64' });
 
-      const payload = {
-        number: TARGET_WHATSAPP,
-        mediatype: "document",
-        fileName: file.originalname || "fatura.pdf",
-        caption: message,
-        media: base64Data
-      };
+        const payload = {
+          number: TARGET_WHATSAPP,
+          mediatype: "document",
+          fileName: file.originalname || `fatura_${i+1}.pdf`,
+          caption: i === 0 ? message : "", // Attach caption to first file only
+          media: base64Data
+        };
 
-      const response = await fetch(`${EVOLUTION_URL}/message/sendMedia/${EVOLUTION_INSTANCE}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': EVOLUTION_API_KEY
-        },
-        body: JSON.stringify(payload)
-      });
-      const data = await response.json();
-      console.log(`[WHATSAPP] Fatura enviada via Evolution API:`, data);
+        const response = await fetch(`${EVOLUTION_URL}/message/sendMedia/${EVOLUTION_INSTANCE}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': EVOLUTION_API_KEY
+          },
+          body: JSON.stringify(payload)
+        });
+        const data = await response.json();
+        console.log(`[WHATSAPP] Fatura ${i+1} enviada via Evolution API:`, data);
+      }
     } else {
       // Envio Apenas de Texto
       const response = await fetch(`${EVOLUTION_URL}/message/sendText/${EVOLUTION_INSTANCE}`, {
@@ -146,27 +154,27 @@ router.post('/leads', async (req, res) => {
 });
 
 // Passo 3: Upload Fatura (Oferta Premium)
-router.post('/leads/invoice', upload.single('invoice'), async (req, res) => {
+router.post('/leads/invoice', upload.array('invoice', 5), async (req, res) => {
   try {
     const { phone } = req.body;
-    const file = req.file;
+    const files = req.files;
 
     const premiumUpdate = {
       phone,
       has_invoice: true,
-      invoice_filename: file ? file.originalname : null,
+      invoice_filenames: files && files.length > 0 ? files.map(f => f.originalname).join(', ') : null,
       lead_score: 'PREMIUM_ANALYSIS', 
       updated_at: new Date().toISOString()
     };
 
     // 1. Atualizar Lead no Supabase (MOCK) buscando pelo phone
-    console.log(`[SUPABASE] Fatura Premium anexada à lead com telefone ${phone}.`);
+    console.log(`[SUPABASE] ${files ? files.length : 0} Faturas Premium anexadas à lead com telefone ${phone}.`);
 
     // 2. Enviar Fatura por E-mail para a Equipa
-    await sendInvoiceByEmail(premiumUpdate, file);
+    await sendInvoiceByEmail(premiumUpdate, files);
 
     // 3. Avisar WhatsApp sobre o upload e enviar o ficheiro PDF via WhatsApp
-    await sendLeadToWhatsApp({ ...premiumUpdate, name: "Upload Premium Recebido" }, file);
+    await sendLeadToWhatsApp({ ...premiumUpdate, name: "Upload Premium Recebido" }, files);
 
     return res.status(200).json({ success: true, premiumUpdate });
   } catch (error) {
