@@ -116,9 +116,15 @@ document.addEventListener('DOMContentLoaded', () => {
       const name = document.getElementById('lead-name').value;
       const email = document.getElementById('lead-email').value;
       const phone = document.getElementById('lead-phone').value;
+      const consent = document.getElementById('lead-consent').checked;
 
       if (!name || !phone) {
         alert('Por favor, preencha pelo menos o seu nome e telefone.');
+        return;
+      }
+
+      if (!consent) {
+        alert('Por favor, aceite a Política de Privacidade e os Termos e Condições para continuar.');
         return;
       }
 
