@@ -55,10 +55,26 @@
       .hero-image-side {
         display: none;
       }
+      .hero-right-side {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 100px 1rem 2rem 1rem;
+      }
+      .hero-form-box-inner {
+        padding: 1.5rem;
+      }
       @media (min-width: 992px) {
         .hero-image-side {
           display: block;
           flex: 1;
+        }
+        .hero-right-side {
+          padding: 6rem 2rem 2rem 2rem;
+          overflow-y: auto;
+        }
+        .hero-form-box-inner {
+          padding: 2rem;
         }
       }
     </style>
@@ -92,12 +108,12 @@
       </div>
 
       <!-- Right Side: Form -->
-      <div style="flex: 1; display: flex; flex-direction: column; padding: 6rem 2rem 2rem 2rem; overflow-y: auto;">
+      <div class="hero-right-side">
         <div style="max-width: 480px; width: 100%; margin: auto;">
           
           <!-- Conversion Form Box -->
           <div class="hero-form-box" style="background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); overflow: hidden; border: 1px solid rgba(0,0,0,0.05); position: relative;">
-            <div style="padding: 2rem;">
+            <div class="hero-form-box-inner">
               
               <!-- STEP 1: Questions -->
               <div id="sim-step-1">
