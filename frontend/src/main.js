@@ -296,4 +296,47 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btnCookieEssential')?.addEventListener('click', () => hideCookieBanner('essential'));
   document.getElementById('btnCookieAccept')?.addEventListener('click', () => hideCookieBanner('all'));
 
+  // Legal Modal Logic
+  const legalLinks = document.querySelectorAll('a[href*="privacidade.html"], a[href*="termos.html"], a[href*="cookies.html"]');
+  const legalModal = document.getElementById('legalModal');
+  const legalModalContent = document.getElementById('legalModalContent');
+  const closeLegalModal = document.getElementById('closeLegalModal');
+
+  if (legalModal && closeLegalModal) {
+    legalLinks.forEach(link => {
+      // Remove target="_blank" so it doesn't open new tabs if Javascript is enabled
+      link.removeAttribute('target');
+      link.addEventListener('click', async (e) => {
+        e.preventDefault();
+        legalModal.style.display = 'flex';
+        legalModalContent.innerHTML = '<p>A carregar...</p>';
+        const url = link.getAttribute('href');
+        try {
+          const res = await fetch(url);
+          const text = await res.text();
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(text, 'text/html');
+          const container = doc.querySelector('.legal-container');
+          if (container) {
+            legalModalContent.innerHTML = container.innerHTML;
+          } else {
+            legalModalContent.innerHTML = '<p>Erro ao carregar o conteúdo.</p>';
+          }
+        } catch (err) {
+          legalModalContent.innerHTML = '<p>Erro ao carregar o conteúdo.</p>';
+        }
+      });
+    });
+
+    closeLegalModal.addEventListener('click', () => {
+      legalModal.style.display = 'none';
+    });
+
+    legalModal.addEventListener('click', (e) => {
+      if (e.target === legalModal) {
+        legalModal.style.display = 'none';
+      }
+    });
+  }
+
 });

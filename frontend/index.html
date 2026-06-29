@@ -281,6 +281,16 @@
       </div>
     </div>
 
+    <!-- Legal Modal Overlay -->
+    <div id="legalModal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 10000; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+      <div style="background: white; padding: 2.5rem 2rem; max-width: 800px; width: 90%; max-height: 85vh; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); position: relative; display: flex; flex-direction: column;">
+        <button id="closeLegalModal" style="position: absolute; top: 1rem; right: 1.5rem; background: transparent; border: none; font-size: 2.5rem; line-height: 1; cursor: pointer; color: var(--color-primary); padding: 0;">&times;</button>
+        <div id="legalModalContent" style="overflow-y: auto; padding-right: 1rem; text-align: left; color: var(--color-text-dark);">
+          A carregar...
+        </div>
+      </div>
+    </div>
+
     <!-- RGPD Cookie Banner -->
     <div id="cookieBanner" class="cookie-banner">
       <div class="cookie-content">
