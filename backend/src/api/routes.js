@@ -65,7 +65,7 @@ async function sendInvoiceByEmail(leadData, files) {
 const EVOLUTION_URL = process.env.EVOLUTION_URL || 'https://evolution.topconsultores.pt';
 const EVOLUTION_INSTANCE = process.env.EVOLUTION_INSTANCE || 'Whats';
 const EVOLUTION_API_KEY = process.env.EVOLUTION_API_KEY || '';
-const TARGET_WHATSAPP = process.env.TARGET_WHATSAPP || '351927327978';
+const TARGET_WHATSAPP = process.env.TARGET_WHATSAPP || '244928053925';
 
 // Helper: Disparo direto de WhatsApp (Evolution API)
 async function sendLeadToWhatsApp(leadData, files = null) {
