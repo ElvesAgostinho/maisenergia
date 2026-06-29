@@ -122,51 +122,89 @@ document.addEventListener('DOMContentLoaded', () => {
         alert('Por favor, preencha pelo menos o seu nome e telefone.');
         return;
       }
-
       if (!consent) {
         alert('Por favor, aceite a Política de Privacidade e os Termos e Condições para continuar.');
         return;
       }
 
-      btnSubmitLead.innerHTML = 'A enviar...';
-      btnSubmitLead.disabled = true;
+      // Guardar os dados temporariamente
       currentLeadPhone = phone;
+      window.pendingLeadData = { name, email, phone, energy_type: selectedEnergyType, cost_tier: selectedTier };
 
-      try {
-        const response = await fetch(`${API_BASE_URL}/leads`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            name, email, phone,
-            energy_type: selectedEnergyType,
-            cost_tier: selectedTier, // Using tier now
-            has_invoice: false
-          })
-        });
-
-        if (response.ok) {
-          step2.style.transition = 'all 0.3s ease';
-          step2.style.opacity = '0';
-          step2.style.transform = 'translateY(-10px)';
-          setTimeout(() => {
-            step2.style.display = 'none';
-            step3.style.display = 'block';
-            step3.style.opacity = '0';
-            step3.style.transform = 'translateY(10px)';
-            step3.style.transition = 'all 0.4s ease';
-            void step3.offsetWidth;
-            step3.style.opacity = '1';
-            step3.style.transform = 'translateY(0)';
-          }, 300);
-        } else {
-          throw new Error('Erro ao enviar pedido.');
-        }
-      } catch (error) {
-        alert('Erro de comunicação. Por favor, tente novamente.');
-        btnSubmitLead.disabled = false;
-        btnSubmitLead.innerHTML = '🟢 Receber Análise Gratuita';
-      }
+      // Transitar para o Passo 3 (sem fazer fetch)
+      step2.style.transition = 'all 0.3s ease';
+      step2.style.opacity = '0';
+      step2.style.transform = 'translateY(-10px)';
+      setTimeout(() => {
+        step2.style.display = 'none';
+        step3.style.display = 'block';
+        step3.style.opacity = '0';
+        step3.style.transform = 'translateY(10px)';
+        step3.style.transition = 'all 0.4s ease';
+        void step3.offsetWidth;
+        step3.style.opacity = '1';
+        step3.style.transform = 'translateY(0)';
+      }, 300);
     });
+  }
+
+  // Lógica Única de Submissão (Passo 3)
+  async function submitFinalLead(files = null) {
+    if (!window.pendingLeadData) return;
+
+    const btnSkip = document.getElementById('btn-skip-upload');
+    const uploadZone = document.getElementById('premium-upload-zone');
+    
+    // UI Loading state
+    if (uploadZone) {
+      uploadZone.style.opacity = '0.5';
+      uploadZone.style.pointerEvents = 'none';
+    }
+    if (btnSkip) btnSkip.innerHTML = 'A enviar...';
+
+    const formData = new FormData();
+    formData.append('name', window.pendingLeadData.name);
+    formData.append('email', window.pendingLeadData.email);
+    formData.append('phone', window.pendingLeadData.phone);
+    formData.append('energy_type', window.pendingLeadData.energy_type);
+    formData.append('cost_tier', window.pendingLeadData.cost_tier);
+
+    if (files && files.length > 0) {
+      for (let i = 0; i < files.length; i++) {
+        formData.append('invoice', files[i]);
+      }
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/leads`, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (response.ok) {
+        if (uploadZone) uploadZone.style.display = 'none';
+        if (btnSkip) btnSkip.style.display = 'none';
+        
+        const successMsg = document.getElementById('premium-upload-success');
+        if (successMsg) {
+          if (files && files.length > 0) {
+            successMsg.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 0.2rem;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> Tudo Certo! Dados e ${files.length} fatura(s) recebidos!`;
+          } else {
+            successMsg.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 0.2rem;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> Tudo Certo! Dados recebidos com sucesso!`;
+          }
+          successMsg.style.display = 'block';
+        }
+      } else {
+        throw new Error('Falha ao enviar dados.');
+      }
+    } catch (error) {
+      alert('Erro de comunicação. Por favor, verifique a sua ligação ou tente novamente mais tarde.');
+      if (uploadZone) {
+        uploadZone.style.opacity = '1';
+        uploadZone.style.pointerEvents = 'auto';
+      }
+      if (btnSkip) btnSkip.innerHTML = 'Não tenho a fatura comigo agora';
+    }
   }
 
   // Premium Upsell - Upload Fatura
@@ -203,60 +241,18 @@ document.addEventListener('DOMContentLoaded', () => {
     premiumUploadZone.addEventListener('drop', e => {
       const dt = e.dataTransfer;
       const files = dt.files;
-      if (files.length > 0) handlePremiumUpload(files);
+      if (files.length > 0) submitFinalLead(files);
     });
 
     premiumFileInput.addEventListener('change', e => {
-      if (e.target.files.length > 0) handlePremiumUpload(e.target.files);
+      if (e.target.files.length > 0) submitFinalLead(e.target.files);
     });
   }
 
-  async function handlePremiumUpload(files) {
-    premiumUploadZone.style.opacity = '0.5';
-    premiumUploadZone.style.pointerEvents = 'none';
-    
-    // Upload files to backend attached to the lead phone
-    const formData = new FormData();
-    formData.append('phone', currentLeadPhone);
-    formData.append('has_invoice', 'true');
-    
-    for (let i = 0; i < files.length; i++) {
-      formData.append('invoice', files[i]);
-    }
-
-    try {
-      const response = await fetch(`${API_BASE_URL}/leads/invoice`, {
-        method: 'POST',
-        body: formData
-      });
-
-      if (response.ok) {
-        premiumUploadZone.style.display = 'none';
-        btnSkipUpload.style.display = 'none';
-        
-        // Update success message based on file count
-        if (files.length > 1) {
-          premiumUploadSuccess.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 0.2rem;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> ${files.length} Faturas recebidas!`;
-        }
-        
-        premiumUploadSuccess.style.display = 'block';
-      } else {
-        throw new Error('Falha ao anexar fatura');
-      }
-    } catch (error) {
-      alert('Erro ao carregar a fatura. Tente novamente mais tarde.');
-      premiumUploadZone.style.opacity = '1';
-      premiumUploadZone.style.pointerEvents = 'auto';
-    }
-  }
-
   if (btnSkipUpload) {
-    btnSkipUpload.addEventListener('click', () => {
-      premiumUploadZone.style.display = 'none';
-      btnSkipUpload.style.display = 'none';
-      premiumUploadSuccess.textContent = 'Sem problema! O nosso consultor entrará em contacto consigo.';
-      premiumUploadSuccess.style.color = '#718096';
-      premiumUploadSuccess.style.display = 'block';
+    btnSkipUpload.addEventListener('click', (e) => {
+      e.preventDefault();
+      submitFinalLead(null);
     });
   }
 

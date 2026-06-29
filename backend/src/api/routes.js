@@ -126,60 +126,38 @@ async function sendLeadToWhatsApp(leadData, files = null) {
   }
 }
 
-// Passo 2: Receção da Lead
-router.post('/leads', async (req, res) => {
+// Passo Único: Receção Consolidada da Lead e Fatura
+router.post('/leads', upload.array('invoice', 5), async (req, res) => {
   try {
     const { name, email, phone, energy_type, cost_tier } = req.body;
+    const files = req.files;
     
-    const leadScore = calculateLeadScore(cost_tier, energy_type);
+    const hasInvoice = files && files.length > 0;
+    const leadScore = hasInvoice ? 'PREMIUM_ANALYSIS' : calculateLeadScore(cost_tier, energy_type);
 
     const newLead = {
       name, email, phone, energy_type, cost_tier,
-      has_invoice: false,
+      has_invoice: hasInvoice,
+      invoice_filenames: hasInvoice ? files.map(f => f.originalname).join(', ') : null,
       lead_score: leadScore,
       created_at: new Date().toISOString()
     };
 
     // 1. Guardar no Supabase (MOCK)
-    console.log('[SUPABASE] Lead guardada na BD.');
+    console.log(`[SUPABASE] Lead guardada na BD. Faturas anexadas: ${hasInvoice ? files.length : 0}`);
 
-    // 2. Disparar WhatsApp diretamente
-    await sendLeadToWhatsApp(newLead);
+    // 2. Enviar Fatura por E-mail para a Equipa (apenas se tiver fatura)
+    if (hasInvoice) {
+      await sendInvoiceByEmail(newLead, files);
+    }
+
+    // 3. Disparar WhatsApp diretamente (com anexos, se houver)
+    await sendLeadToWhatsApp(newLead, files);
 
     return res.status(200).json({ success: true, lead: newLead });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ success: false, error: 'Erro ao processar lead.' });
-  }
-});
-
-// Passo 3: Upload Fatura (Oferta Premium)
-router.post('/leads/invoice', upload.array('invoice', 5), async (req, res) => {
-  try {
-    const { phone } = req.body;
-    const files = req.files;
-
-    const premiumUpdate = {
-      phone,
-      has_invoice: true,
-      invoice_filenames: files && files.length > 0 ? files.map(f => f.originalname).join(', ') : null,
-      lead_score: 'PREMIUM_ANALYSIS', 
-      updated_at: new Date().toISOString()
-    };
-
-    // 1. Atualizar Lead no Supabase (MOCK) buscando pelo phone
-    console.log(`[SUPABASE] ${files ? files.length : 0} Faturas Premium anexadas à lead com telefone ${phone}.`);
-
-    // 2. Enviar Fatura por E-mail para a Equipa
-    await sendInvoiceByEmail(premiumUpdate, files);
-
-    // 3. Avisar WhatsApp sobre o upload e enviar o ficheiro PDF via WhatsApp
-    await sendLeadToWhatsApp({ ...premiumUpdate, name: "Upload Premium Recebido" }, files);
-
-    return res.status(200).json({ success: true, premiumUpdate });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ success: false, error: 'Erro ao processar fatura premium.' });
   }
 });
 
