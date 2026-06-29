@@ -29,8 +29,8 @@ function calculateLeadScore(costTier, energyType) {
 async function sendInvoiceByEmail(leadData, files) {
   try {
     const mailOptions = {
-      from: '"Mais Energia Bot" <bot@maisenergia.pt>',
-      to: process.env.SALES_TEAM_EMAIL || 'vendas@maisenergia.pt',
+      from: '"Energia Top Bot" <bot@energiatop.pt>',
+      to: process.env.SALES_TEAM_EMAIL || 'vendas@energiatop.pt',
       subject: `[LEAD FATURA] Nova fatura recebida (Upload Premium)`,
       text: `Recebemos uma nova fatura Premium!\n\nTelefone Associado: ${leadData.phone}\nScore Estimado: ${leadData.lead_score}\n\nFaturas em anexo.`,
       attachments: []

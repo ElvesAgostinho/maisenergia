@@ -13,7 +13,7 @@ RUN npm install
 COPY . .
 
 # Executa o build da aplicação (vai gerar a pasta /dist)
-ENV VITE_API_URL=https://api.maisenergia.topconsultores.pt/api
+ENV VITE_API_URL=https://api.energiatop.topconsultores.pt/api
 RUN npm run build
 
 # --- Stage 2: Serve ---
