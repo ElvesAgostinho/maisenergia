@@ -304,25 +304,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (legalModal && closeLegalModal) {
     legalLinks.forEach(link => {
-      // Remove target="_blank" so it doesn't open new tabs if Javascript is enabled
       link.removeAttribute('target');
-      link.addEventListener('click', async (e) => {
+      link.addEventListener('click', (e) => {
         e.preventDefault();
         legalModal.style.display = 'flex';
-        legalModalContent.innerHTML = '<p>A carregar...</p>';
         const url = link.getAttribute('href');
-        try {
-          const res = await fetch(url);
-          const text = await res.text();
-          const parser = new DOMParser();
-          const doc = parser.parseFromString(text, 'text/html');
-          const container = doc.querySelector('.legal-container');
-          if (container) {
-            legalModalContent.innerHTML = container.innerHTML;
-          } else {
-            legalModalContent.innerHTML = '<p>Erro ao carregar o conteúdo.</p>';
-          }
-        } catch (err) {
+        let contentId = '';
+        if (url.includes('privacidade')) contentId = 'content-privacidade';
+        else if (url.includes('termos')) contentId = 'content-termos';
+        else if (url.includes('cookies')) contentId = 'content-cookies';
+        
+        const contentDiv = document.getElementById(contentId);
+        if (contentDiv) {
+          legalModalContent.innerHTML = contentDiv.innerHTML;
+        } else {
           legalModalContent.innerHTML = '<p>Erro ao carregar o conteúdo.</p>';
         }
       });
