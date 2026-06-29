@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --- FUNIL AUDITORIA GRATUITA ---
+  // --- FUNIL ANÁLISE GRATUITA ---
   let selectedEnergyType = 'luz';
   let selectedTier = '';
   let currentLeadPhone = ''; // To link premium upload with lead

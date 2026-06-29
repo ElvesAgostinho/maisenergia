@@ -73,7 +73,7 @@ async function sendLeadToWhatsApp(leadData, files = null) {
     console.log(`[WHATSAPP] A enviar mensagem para ${TARGET_WHATSAPP} sobre a lead ${leadData.name || leadData.phone}...`);
     
     // Construção da mensagem
-    let message = `*NOVA LEAD CAPTURADA (Auditoria Gratuita)*\n\n`;
+    let message = `*NOVA LEAD CAPTURADA (Análise Gratuita)*\n\n`;
     if (leadData.name) message += `👤 Nome: ${leadData.name}\n`;
     message += `📞 Telefone do Cliente: ${leadData.phone}\n`;
     if (leadData.email) message += `📧 Email: ${leadData.email}\n`;
